@@ -1,8 +1,7 @@
 <htmL>
    <head>
-     <title> Grading and refunding page </title>
+     <title> Grading page </title>
    </head>
-     <link href="style.css" rel="stylesheet" type="text/css" />
      <script src = "jsbn.js"> </script>
      <script src = "jsbn2.js"> </script>
      <script src = "base58.js"> </script>
@@ -19,7 +18,7 @@
      <input type = "number" id = "sport">
      Enter league:
      <input type = "number" id = "league">
-     Enter event:
+     Enter event (non obfuscated id):
      <input type = "number" id = "event">
      <br>
      Enter period:
@@ -28,13 +27,11 @@
      <input type = "number" id = "mkt">
      Enter player:
      <input type = "number" id = "player"> blank for no player
-     <h3> If the result is a push, click the button below</h3>
-     <button onclick = "wagerPush()"> Push this wager </button>
-     <h3> Enter winning outcome number - 0 or 1</h3>
+     <h3> Enter winning outcome number: 0 or 1, or 2-255 for push</h3>
      <input type = "number" id = "winner">
      <button onclick = "grade()"> Grade wagers </button>
    
-     <h3> <a href = "" id = "gradeSig"> Tx sig appears here </a> </h3>
+     <h3> <a href = "" id = "gradeSig" target = "_blank"> Tx sig appears here </a> </h3>
    
      <h3 id = "txsizemsg"> </h3>
      
