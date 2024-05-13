@@ -1,0 +1,39 @@
+<htmL>
+   <head>
+     <title> Grading and refunding page </title>
+   </head>
+     <link href="style.css" rel="stylesheet" type="text/css" />
+     <script src = "jsbn.js"> </script>
+     <script src = "jsbn2.js"> </script>
+     <script src = "base58.js"> </script>
+     <script src = "https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+     <script src = "script.js"> </script>
+     
+     <h3> Connect to Phantom Wallet before grading </h3>
+     <button onclick = "phantom_connect()"> Connect to phantom wallet </button>
+     <h3> Your wallet address: </h3>
+     <h3 id = "display"> </h3>
+     
+     <h3> Enter sport below: </h3>
+     <input type = "number" id = "sport">
+     <h3> Enter league below: </h3>
+     <input type = "number" id = "league">
+     <h3> Enter event below: </h3>
+     <input type = "number" id = "event">
+     <h3> Enter period below: </h3>
+     <input type = "number" id = "period">
+     <h3> Enter mkt below: </h3>
+     <input type = "number" id = "mkt">
+     <h3> Enter player below: blank for no player</h3>
+     <input type = "number" id = "player">
+     <h3> If the result is a push, click the button below</h3>
+     <button onclick = "wagerPush()"> Push this wager </button>
+     <h3> Enter winning outcome number - 0 or 1</h3>
+     <input type = "number" id = "winner">
+     <button onclick = "grade()"> Grade wagers </button>
+   
+     <h3> <a href = "" id = "gradeSig"> Tx sig appears here </a> </h3>
+   
+     <h3 id = "txsizemsg"> </h3>
+     
+   </htmL>
