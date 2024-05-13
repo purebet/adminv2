@@ -7,29 +7,21 @@ var mint = new solanaWeb3.PublicKey("");
 var globalProvider;
 var globalKey;
 
-function phantom_connect() {
-   var provider = () => {
-      if ("solana" in window) {
-         var provider = window.solana;
-         globalProvider = provider;
-         if (provider.isPhantom) {
-            return provider;
-         } else {
-            return false;
-         }
-      }
-      window.open("https://phantom.app", "_blank");
-   };
-   var phantom = provider();
-   if (phantom !== false) {
-      try {
-         var connect_wallet = phantom.connect();
-         phantom.on("connect", async () => {
-            globalKey = phantom.publicKey;
-            document.getElementById("display").innerHTML = globalKey.toString();
-         });
-      } catch (err) {
-         console.log("Connection Cancelled!");
+async function solflare_connect(){
+   await window.solflare.connect();
+   document.getElementById("display").innerHTML = window.solflare.publicKey.toBase58();
+   globalKey = window.solflare.publicKey;
+   globalProvider = window.solflare
+}
+
+async function phantom_connect() {
+   if ('phantom' in window) {
+      phantom = window.phantom?.solana;
+      if(phantom?.isPhantom) {
+         let connection = await phantom.connect()
+         globalKey = connection.publicKey
+         globalProvider = connection
+         document.getElementById("display").innerHTML = globalKey.toString()
       }
    }
 }
