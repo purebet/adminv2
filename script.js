@@ -4,7 +4,7 @@ var tokenProgram = new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss
 var mint = new solanaWeb3.PublicKey("Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr");
 var pda = new solanaWeb3.PublicKey("8AbwG4Cbr9DefgeF7P9Pt9RJMA1RS1KVogRWBWh9U8wM");
 var delay = new solanaWeb3.PublicKey("Axb9d4GZ9QtMEJoRbnv75gGaos5CSeCpEpJRJsz9YPHF"); 
-var connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
+var connection = new solanaWeb3.Connection("https://solana-mainnet.core.chainstack.com/db4ce305e4c9e0a90e069f0fe3a5abf7");
 var all0s = "11111111111111111111111111111111";
 var pbmm = "PbmmyD7nYPPiReWYtPK4HKMbzdP79oWrseoYR3McPU5";
 var globalProvider;
