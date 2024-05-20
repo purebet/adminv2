@@ -28,23 +28,6 @@
                 document.getElementById("addr").innerHTML = window.solflare.publicKey.toBase58();
             }
 
-            async function genAccInstr(){
-                let rentExemptVal = 1000000000 * 0.0009048;
-                let seed = 'purebetDelay' + Math.random() * 1000000000000;
-                let newAcc = await solanaWeb3.PublicKey.createWithSeed(window.solana.publicKey, seed, programID);
-                return {
-                    pubkey: newAcc,
-                    instr: solanaWeb3.SystemProgram.createAccountWithSeed({
-                        fromPubkey: window.solana.publicKey,
-                        basePubkey: window.solana.publicKey,
-                        seed: seed,
-                        newAccountPubkey: newAcc,
-                        lamports: rentExemptVal,
-                        space: 2,
-                        programId: programID,
-                    })
-                }
-            }
             async function setDelay(){
                 let delayAccs = await connection.getProgramAccounts(programID, {filters: [{dataSize: 2}]});
                 let tx = new solanaWeb3.Transaction();
@@ -52,12 +35,12 @@
                 if(delayAccs.length == 0){
                 //if(delayAccs.length == 1){
                     let rentExemptVal = 1000000000 * 0.0009048;
-                    let seed = 'purebetDelay' + Math.random() * 1000000000000;
-                    let newAcc = await solanaWeb3.PublicKey.createWithSeed(window.solana.publicKey, seed, programID);
+                    let seed = 'purebetDelay';
+                    let newAcc = await solanaWeb3.PublicKey.createWithSeed(window.solflare.publicKey/*window.solana.publicKey*/, seed, programID);
                     delayAcc = newAcc;
                     tx.add(solanaWeb3.SystemProgram.createAccountWithSeed({
-                        fromPubkey: window.solana.publicKey,
-                        basePubkey: window.solana.publicKey,
+                        fromPubkey: window.solflare.publicKey, //window.solana.publicKey,
+                        basePubkey: window.solflare.publicKey, //ana.publicKey,
                         seed: seed,
                         newAccountPubkey: newAcc,
                         lamports: rentExemptVal,
@@ -84,7 +67,7 @@
                 //let signed = await window.solana.signTransaction(tx);
                 let signature = await connection.sendRawTransaction(signed.serialize());
                 await connection.confirmTransaction(signature);
-                document.getElementById("sig").setAttribute("href", "https://explorer.solana.com/tx/" + signature + "?cluster=devnet");
+                document.getElementById("sig").setAttribute("href", "https://explorer.solana.com/tx/" + signature);
                 document.getElementById("sig").innerHTML = signature;
             }
 
