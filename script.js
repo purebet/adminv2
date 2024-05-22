@@ -85,7 +85,9 @@ async function getBets(sport, league, event, period, mkt, player){
 async function grade(){
    var sport = document.getElementById("sport").value;
    var league = document.getElementById("league").value;
-   var event = (document.getElementById("event").value - 1500000000) * 2;
+   var event = document.getElementById("isObfuscated").checked ? //obfuscated is written on chain
+      document.getElementById("event").value :
+      (document.getElementById("event").value - 1500000000) * 2;
    var period = document.getElementById("period").value;
    var mkt = document.getElementById("mkt").value;
    var player = document.getElementById("player").value;
