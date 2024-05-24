@@ -157,7 +157,7 @@ async function gradeParams(sport, league, event, period, mkt, player, winner){
    signature = await connection.sendRawTransaction(signed.serialize());
    await connection.confirmTransaction(signature);
    document.getElementById("gradeSig").innerHTML = signature;
-   document.getElementById("gradeSig").setAttribute("href", "https://explorer.solana.com/tx/" + signature + "?cluster=devnet");
+   document.getElementById("gradeSig").setAttribute("href", "https://explorer.solana.com/tx/" + signature);// + "?cluster=devnet");
 
    for(let bet of graded){
       let call = new XMLHttpRequest();
