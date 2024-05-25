@@ -97,6 +97,9 @@
                 let call = new XMLHttpRequest();
                 call.open("POST", "https://p43l0w1hu4.execute-api.ap-northeast-1.amazonaws.com/default/pendingBetsV2", false);
                 call.send(JSON.stringify(payload));
+                if(call.status >= 400){
+                    document.getElementById("msg").innerHTML = call.responseText;
+                }
                 //make an api call that is  handled by pending bets lambda
                 document.getElementById("msg").innerHTML = "done";
             }
