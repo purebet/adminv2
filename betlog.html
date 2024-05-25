@@ -1,0 +1,102 @@
+<html>
+    <head>
+        <title> Retroactively fill betlog </title>
+    </head>
+    <body>
+        <h1> Enter the address of the bet account here </h1>
+        <input type = "text" id = "addr" />
+        <button onclick = "fill()"> Add all info to betlog </button>
+        <h2 id = "msg"> Waiting for input </h2>
+        
+        <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+        <script>
+            //var connection = new solanaWeb3.Connection("https://solana-mainnet.core.chainstack.com/db4ce305e4c9e0a90e069f0fe3a5abf7");
+            var connection = new solanaWeb3.Connection("https://thrumming-burned-bush.solana-mainnet.quiknode.pro/5bb1fc012c796f46f7249e3ec7b3e62ed563f846/", "confirmed");
+            function lilEndInt(bytes){
+                let output = 0;
+                for(let pow = 0; pow < bytes.length; pow++){
+                    output = output + bytes[pow] * 256**pow;
+                }
+                return output;
+            }
+            function formatName(bytes){
+                if(bytes[0] + bytes[1] + bytes[2] + bytes[3] == 0){
+                    return "";
+                }
+                return String.fromCharCode(bytes[0]) + 
+                    ". " + 
+                    String.fromCharCode(bytes[1]) +
+                    String.fromCharCode(bytes[2]) +
+                    String.fromCharCode(bytes[3])
+            }
+            function b58str(data, start){
+                return new solanaWeb3.PublicKey(data.slice(start, start + 32)).toBase58();
+            }
+
+            async function fill(){
+                document.getElementById("msg").innerHTML = "Processing";
+                //for now just pick the first side without pbmm. In the future if there was a user to user bet 2 calls need to be made
+                let payload = {
+                    isCanceled: false,
+                    isMonacoDirect: false,
+                    isAverDirect: false,
+                    eventStart: 123 // can't find out what the event start is
+                };
+                //getAccountInfo
+                let pubkey = document.getElementById("addr").value;
+                payload.betAddr = pubkey;
+                let keyform = new solanaWeb3.PublicKey(pubkey);
+                let info = await connection.getAccountInfo(keyform);
+                
+                payload.sport = info.data[0];
+                payload.league = lilEndInt(info.data.slice(1, 5));
+                let eventId = lilEndInt(info.data.slice(5, 13));
+                payload.pinId = eventId / 2 + 1500000000;
+                payload.period = info.data[13];
+                payload.mkt = lilEndInt(info.data.slice(14, 16));
+                payload.player = formatName(info.data.slice(16, 20));
+
+                let stake0 = lilEndInt(info.data.slice(20, 28)) / 1000000;
+                let stake1 = lilEndInt(info.data.slice(28, 36)) / 1000000;
+                let odds0 = (stake0 + stake1) / stake0;
+                let odds1 = (stake0 + stake1) / stake1;
+                let bettor0 = b58str(info.data, 36);
+                let bettor1 = b58str(info.data, 68);
+                if(bettor0 == "11111111111111111111111111111111" || bettor0 == "PbmmyD7nYPPiReWYtPK4HKMbzdP79oWrseoYR3McPU5"){
+                    payload.bettorSide = 1;
+                    payload.bettorStake = stake1;
+                    payload.bettorOdds = odds1;
+                }
+                else{
+                    payload.bettorSide = 0;
+                    payload.bettorStake = stake0;
+                    payload.bettorOdds = odds0;
+                }
+
+                payload.placedAt = lilEndInt(info.data.slice(133, 141));
+                payload.isFreeBet = info.data[132] == 1;
+                payload.isAggregated = info.data[141] == 1;
+
+                //get fixtures by going to logs of this addr
+                //set a default event in case it can't be found
+                payload.event = `sport: ${payload.sport}, league: ${payload.league}, event: ${eventId} vs. temporary`;
+
+                let txHist = await connection.getSignaturesForAddress(keyform);
+                let memo = txHist[txHist.length - 1].memo;
+                try{
+                    let parseableMemo = memo.substring(memo.indexOf("{"));
+                    let parsed = JSON.parse(parseableMemo);
+                    payload.event = parsed.in;
+                } catch(err){
+                    //set it to the raw logs, or do nothing if logs are nonexistent
+                    if(memo != "" && memo != undefined && memo != null){
+                        payload.event = memo + " vs. temporary";
+                    }
+                }
+
+                console.log(payload);
+                //make an api call that is  handled by pending bets lambda
+                document.getElementById("msg").innerHTML = "done";
+            }
+        </script>
+    </body>
