@@ -35,7 +35,6 @@
 
             async function fill(){
                 document.getElementById("msg").innerHTML = "Processing";
-                //for now just pick the first side without pbmm. In the future if there was a user to user bet 2 calls need to be made
                 let payload = {
                     isCanceled: false,
                     isMonacoDirect: false,
@@ -62,15 +61,18 @@
                 let odds1 = (stake0 + stake1) / stake1;
                 let bettor0 = b58str(info.data, 36);
                 let bettor1 = b58str(info.data, 68);
+                //for now just pick the first side without pbmm. In the future if there was a user to user bet 2 calls need to be made
                 if(bettor0 == "11111111111111111111111111111111" || bettor0 == "PbmmyD7nYPPiReWYtPK4HKMbzdP79oWrseoYR3McPU5"){
                     payload.bettorSide = 1;
                     payload.bettorStake = stake1;
                     payload.bettorOdds = odds1;
+                    payload.bettorAddr = bettor1;
                 }
                 else{
                     payload.bettorSide = 0;
                     payload.bettorStake = stake0;
                     payload.bettorOdds = odds0;
+                    payload.bettorAddr = bettor0;
                 }
 
                 payload.placedAt = lilEndInt(info.data.slice(133, 141));
