@@ -101,6 +101,7 @@
                 call.send(JSON.stringify(payload));
                 if(call.status >= 400){
                     document.getElementById("msg").innerHTML = call.responseText;
+                    return;
                 }
                 //make an api call that is  handled by pending bets lambda
                 document.getElementById("msg").innerHTML = "done";
