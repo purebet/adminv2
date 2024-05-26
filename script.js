@@ -5,7 +5,8 @@ var tokenProgram = new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss
 var mint = new solanaWeb3.PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
 var pda = new solanaWeb3.PublicKey("8AbwG4Cbr9DefgeF7P9Pt9RJMA1RS1KVogRWBWh9U8wM");
 var delay = new solanaWeb3.PublicKey("Axb9d4GZ9QtMEJoRbnv75gGaos5CSeCpEpJRJsz9YPHF"); 
-var connection = new solanaWeb3.Connection("https://solana-mainnet.core.chainstack.com/db4ce305e4c9e0a90e069f0fe3a5abf7");
+//var connection = new solanaWeb3.Connection("https://solana-mainnet.core.chainstack.com/db4ce305e4c9e0a90e069f0fe3a5abf7");
+var connection = new solanaWeb3.Connection("https://thrumming-burned-bush.solana-mainnet.quiknode.pro/5bb1fc012c796f46f7249e3ec7b3e62ed563f846/");
 var all0s = "11111111111111111111111111111111";
 var pbmm = "PbmmyD7nYPPiReWYtPK4HKMbzdP79oWrseoYR3McPU5";
 var globalProvider;
