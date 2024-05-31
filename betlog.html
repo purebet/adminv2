@@ -3,8 +3,8 @@
         <title> Retroactively fill betlog </title>
     </head>
     <body>
-        <h1> Enter the address of the bet account here </h1>
-        <input type = "text" id = "addr" />
+        <h1> Enter the address of the bet account here, add startTime if you want </h1>
+        <input type = "text" id = "addr" />  <input type = "number" id = "startTime" />
         <button onclick = "fill()"> Add all info to betlog </button>
         <h2 id = "msg"> Waiting for input </h2>
         
@@ -35,11 +35,12 @@
 
             async function fill(){
                 document.getElementById("msg").innerHTML = "Processing";
+                let startTime = document.getElementById("startTime").value
                 let payload = {
                     isCanceled: false,
                     isMonacoDirect: false,
                     isAverDirect: false,
-                    eventStart: 123 // can't find out what the event start is
+                    eventStart: startTime || 123
                 };
                 //getAccountInfo
                 let pubkey = document.getElementById("addr").value;
