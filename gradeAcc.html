@@ -22,6 +22,7 @@
             var delay = new solanaWeb3.PublicKey("Axb9d4GZ9QtMEJoRbnv75gGaos5CSeCpEpJRJsz9YPHF"); 
             var connection = new solanaWeb3.Connection("https://thrumming-burned-bush.solana-mainnet.quiknode.pro/5bb1fc012c796f46f7249e3ec7b3e62ed563f846/", "confirmed");
             var blankPubkey = "11111111111111111111111111111111";
+            var pbmm = "PbmmyD7nYPPiReWYtPK4HKMbzdP79oWrseoYR3McPU5";
 
             function showWallet(){
                 document.getElementById("addr").innerHTML = window.solana.publicKey.toBase58();
@@ -73,6 +74,12 @@
                 let signed = await window.solana.signTransaction(transaction);
                 let signature = await connection.sendRawTransaction(signed.serialize());
                 await connection.confirmTransaction(signature);
+                let bettor = bettor0.toBase58() == pbmm ? bettor1 : bettor0;
+                let call = new XMLHttpRequest();
+                let url = "https://p43l0w1hu4.execute-api.ap-northeast-1.amazonaws.com/default/pendingBetsV2?grade=" + 
+                    pubkey + "&for=" + bettor + "&winner=" + instrData[20];
+                call.open("GET", url);
+                call.send();
                 document.getElementById("sig").setAttribute("href", "https://explorer.solana.com/tx/" + signature);
                 document.getElementById("sig").innerHTML = signature;
             }
