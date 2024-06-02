@@ -9,12 +9,14 @@
         <h2> Stake: minimum <b id = "minStake"></b></h2>
         <input type = "number" id = "stake" oninput = "changeOdds()"/>
         <h3> Odds <b id = "odds"></b></h3>
+        <h2> Place the correct bet at the other venue: <b id = "otherBet"> </b> in <b id = "eventName"></b></h2>
         <p> Identifying information and side will be calculated automatically from account. Onchain program still checks those for correctness though.</p>
         <button onclick = "window.solana.connect()"> Connect Phantom Wallet </button>
         <button onclick = "window.solflare.connect()"> Connect solflare wallet </button>
         <p id = "addr"> Wallet addr shows up here </p>
         <button onclick = "place()"> Match this bet </button>
         <a id = "sig" target = "_blank"> tx sig appears here</a>
+        <p id = "msg"> If there is an error with updating the status in betlog table it shows up here</p>
         <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
         <script>
             var programID = new solanaWeb3.PublicKey("9uReBEtnYGYf1oUe4KGSt6kQhsqGE74i17NzRNEDLutn");
@@ -26,6 +28,7 @@
             var blankPubkey = "11111111111111111111111111111111";
             var betData = [];
             var isSolflare = false;
+            var bettor = "";
 
             function showWallet(){
                 document.getElementById("addr").innerHTML = window.solana.publicKey.toBase58();
@@ -62,8 +65,22 @@
                 let signed = await window.solana.signTransaction(transaction);
                 let signature = await connection.sendRawTransaction(signed.serialize());
                 await connection.confirmTransaction(signature);
+                
+                //make an api call that is  handled by pending bets lambda
+                let call = new XMLHttpRequest();
+                call.open(
+                    "GET", 
+                    `https://p43l0w1hu4.execute-api.ap-northeast-1.amazonaws.com/default/pendingBetsV2?match=${document.getElementById("acc").value}&for=${bettor}`,
+                    false
+                );
+                call.send();
+                if(call.status >= 400){
+                    document.getElementById("msg").innerHTML = call.responseText;
+                }
+                
                 document.getElementById("sig").innerHTML = signature;
                 document.getElementById("sig").setAttribute("href", "https://explorer.solana.com/tx/" + signature);
+                
             }
 
             function lilEndInt(bytes){
@@ -81,7 +98,7 @@
                 //window.open("accdetail.html?" + pubkey, "accinfo");
                 betData = Array.from(info.data.slice(0, 36));
                 let wallet0 = new solanaWeb3.PublicKey(info.data.slice(36, 68)).toBase58();
-                //let wallet1 = new solanaWeb3.PublicKey(info.data.slice(68, 100)).toBase58();
+                let wallet1 = new solanaWeb3.PublicKey(info.data.slice(68, 100)).toBase58();
                 let stake0 = lilEndInt(info.data.slice(20, 28));
                 let stake1 = lilEndInt(info.data.slice(28, 36));
                 let minStake, maxOdds;
@@ -89,15 +106,37 @@
                     betData.push(0);
                     minStake = stake0 / 1000000;
                     maxOdds = (stake0 + stake1) / stake0;
+                    bettor = wallet1;
                 }
                 else{
                     betData.push(1);
                     minStake = stake1 / 1000000;
                     maxOdds = (stake0 + stake1) / stake1;
+                    bettor = wallet0;
                 }
                 document.getElementById("minStake").innerHTML = minStake;
                 document.getElementById("stake").setAttribute("value", minStake);
                 document.getElementById("odds").innerHTML = maxOdds;
+                //read logs to get event name
+                let eventName = "unknown";
+                let otherBet = "unknown";
+                let txHist = await connection.getSignaturesForAddress(keyform);
+                if(txHist.length > 0){
+                    let memo = txHist[txHist.length - 1].memo;
+                    try{
+                        let parseableMemo = memo.substring(memo.indexOf("{"));
+                        let parsed = JSON.parse(parseableMemo);
+                        eventName = parsed.in;
+                        otherBet = parsed.on;
+                    } catch(err){
+                        //set it to the raw logs, or do nothing if logs are nonexistent
+                        if(memo != "" && memo != undefined && memo != null){
+                            eventName = memo;
+                        }
+                    }
+                }
+                document.getElementById("eventName").innerHTML = eventName;
+                document.getElementById("otherBet").innerHTML = otherBet;
             }
 
             function numToBytes(num, bytes){
