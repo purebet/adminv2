@@ -10,6 +10,7 @@
         <h2>period: <span id = "period"></span></h2>
         <h2>mkt: <span id = "mkt"></span></h2>
         <h2>player: <span id = "player"></span></h2>
+        <h2> Event name: <span id = "eventName"> </span></h2>
         <h3>stake0: <span id = "stake0"></span>, stake1: <span id = "stake1"></span></h3>
         <h3>odds0: <span id = "odds0"></span>, odds1: <span id = "odds1"></span></h3>
         <h3>bettor0: <span id = "bettor0"></span>, bettor1: <span id = "bettor1"></span></h3>
@@ -17,6 +18,7 @@
         <p> time: <span id = "time"></span></p>
         <p> is free bet: <span id = "freebet"></span></p>
         <p> to be aggregated: <span id = "toAggregate"> </span> </p>
+        
         <ol id = "data" start = "0"></ol>
 
         <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
@@ -97,6 +99,25 @@
 
                 return lilEndInt(bytes); 
             }
+            async function eventName(keyform){
+                let eventName = "unknown";
+                let txHist = await connection.getSignaturesForAddress(keyform);
+                if(txHist.length > 0){
+                    let memo = txHist[txHist.length - 1].memo;
+                    try{
+                        let parseableMemo = memo.substring(memo.indexOf("{"));
+                        let parsed = JSON.parse(parseableMemo);
+                        eventName = parsed.in;
+                    } catch(err){
+                        //set it to the raw logs, or do nothing if logs are nonexistent
+                        if(memo != "" && memo != undefined && memo != null){
+                            eventName = memo;
+                        }
+                    }
+                }
+                return eventName;
+            }
+            
             async function populate(){
                 var pubkey = window.location.href.split("?")[1];
                 document.getElementById("pubkey").innerHTML = pubkey;
@@ -110,6 +131,8 @@
                 popEl("period", info.data[13]);
                 popEl("mkt", mktType(lilEndInt(info.data.slice(14, 16))));
                 popEl("player", formatName(info.data.slice(16, 20)));
+
+                popEl("eventName", await eventName(keyform));
 
                 let stake0 = lilEndInt(info.data.slice(20, 28)) / 1000000;
                 let stake1 = lilEndInt(info.data.slice(28, 36)) / 1000000;
