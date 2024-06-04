@@ -23,7 +23,8 @@
 
         <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
         <script>
-            var connection = new solanaWeb3.Connection("https://solana-mainnet.core.chainstack.com/db4ce305e4c9e0a90e069f0fe3a5abf7");
+            //var connection = new solanaWeb3.Connection("https://solana-mainnet.core.chainstack.com/db4ce305e4c9e0a90e069f0fe3a5abf7");
+            var connection = new solanaWeb3.Connection("https://thrumming-burned-bush.solana-mainnet.quiknode.pro/5bb1fc012c796f46f7249e3ec7b3e62ed563f846/");
             function copy() {
                 let copyText = document.getElementById("pubkey");
                 navigator.clipboard.writeText(copyText.innerText);
