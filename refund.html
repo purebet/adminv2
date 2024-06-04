@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title> Refunding bets </title>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/base-58@0.0.1/Base58.min.js"></script>
+    <script type="module" src="refund.mjs"></script>
+  </head>
+  <body>
+    <select id="cluster" onchange="changeCluster.call(this)">
+        <option value="devnet" selected>Devnet</option>
+        <option value="mainnet">Mainnet</option>
+    </select>
+    <button onclick = "window.solana.connect()"> Connect Wallet </button>
+    <p id = "addr"> </p>
+
+    <h1> Enter bet address </h1>
+    <input type = "text" id = "acc" />
+    <button onclick = "refund()"> Refund this bet </button>
+    <h2> The address to return tokens to: <div id = "tokTo"> </div> </h2>
+    <h2> The address to return rent exemption to: <div id = "rentTo"> </div> </h2>
+    <h1> <a id = "sig1" target = "_blank"> tx sig shows up here</a></h1>
+
+    <hr>
+
+    <h1> Enter event ID </h1>
+    <input type = "text" id = "eventID" />
+    <button onclick = "refundAll()"> Refund all bets </button>
+    <h1 id="betCount"></h1>
+    <h1> <a id = "sig2" target = "_blank"> tx sig doesn't show up here, see console for tx sig</a></h1>
+  </body>
+</html>
