@@ -7,6 +7,8 @@
         <p id = "addr"> </p>
         <h1> address of bet to grade </h1>
         <input type = "text" id = "acc" />
+        <button onclick = "readInfo()"> Read the info of this bet </button>
+        <h3> Event name: <b id = "eventName"></b>, mkt: <b id = "mkt"> </b></h3>
         <h2> Grading signal (0, 1, or 2-255 for a push)</h2>
         <input type = "text" id = "signal" />
         <button onclick = "grade()"> grade this bet </button>
@@ -28,6 +30,39 @@
                 document.getElementById("addr").innerHTML = window.solana.publicKey.toBase58();
             }
             window.solana.on("connect", showWallet);
+
+            function lilEndInt(bytes){
+                let output = 0;
+                for(let pow = 0; pow < bytes.length; pow++){
+                    output = output + bytes[pow] * 256**pow;
+                }
+                return output;
+            }
+
+            async function readInfo(){
+                let pubkey = document.getElementById("acc").value;
+                let keyform = new solanaWeb3.PublicKey(pubkey);
+                let info = await connection.getAccountInfo(keyform);
+                let mkt = lilEndInt(Array.from(info.data).slice(14, 16));
+                document.getElementById("mkt").innerHTML = mkt;
+                //read logs to get event name
+                let eventName = "unknown";
+                let txHist = await connection.getSignaturesForAddress(keyform);
+                if(txHist.length > 0){
+                    let memo = txHist[txHist.length - 1].memo;
+                    try{
+                        let parseableMemo = memo.substring(memo.indexOf("{"));
+                        let parsed = JSON.parse(parseableMemo);
+                        eventName = parsed.in;
+                    } catch(err){
+                        //set it to the raw logs, or do nothing if logs are nonexistent
+                        if(memo != "" && memo != undefined && memo != null){
+                            eventName = memo;
+                        }
+                    }
+                }
+                document.getElementById("eventName").innerHTML = eventName;
+            }
 
             async function grade(){
                 let pubkey = document.getElementById("acc").value;
